@@ -22,14 +22,14 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(status_code=204, headers=CORS_HEADERS)
 
     token = os.environ.get("AIRTABLE_TOKEN")
-env_keys = sorted([k for k in os.environ.keys() if "AIRTABLE" in k.upper() or "TOKEN" in k.upper()])
-if not token:
-    return func.HttpResponse(
-        json.dumps({"error": "Token not found", "matching_env_keys": env_keys, "total_env_vars": len(os.environ)}),
-        status_code=500,
-        mimetype="application/json",
-        headers=CORS_HEADERS,
-    )
+    if not token:
+        logging.error("AIRTABLE_TOKEN application setting is not configured.")
+        return func.HttpResponse(
+            json.dumps({"error": "Server misconfiguration."}),
+            status_code=500,
+            mimetype="application/json",
+            headers=CORS_HEADERS,
+        )
 
     try:
         body = req.get_json()
