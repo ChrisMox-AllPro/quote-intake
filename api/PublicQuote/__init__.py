@@ -6,8 +6,8 @@ import urllib.error
 
 import azure.functions as func
 
-BASE_ID = "appG9fV0TBrT52xKt"
-TABLE_ID = "tblJhccuxgVZBNZv1"
+BASE_ID   = "appG9fV0TBrT52xKt"
+TABLE_ID  = "tbl0PtnVbfjOrXRoD"
 AIRTABLE_URL = f"https://api.airtable.com/v0/{BASE_ID}/{TABLE_ID}"
 
 CORS_HEADERS = {
@@ -83,7 +83,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         logging.error(f"Unexpected error submitting to Airtable: {e}")
         return func.HttpResponse(
-            json.dumps({"error": "Failed to submit quote request."}),
+            json.dumps({"error": "Failed to submit request."}),
             status_code=502,
             mimetype="application/json",
             headers=CORS_HEADERS,
