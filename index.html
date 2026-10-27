@@ -579,8 +579,15 @@ async function submitQuote() {
     });
 
     if (!resp.ok) {
-      var err = await resp.json();
-      throw new Error(err.detail || err.error || 'Submission failed (HTTP ' + resp.status + ')');
+      var err = {};
+      try { err = await resp.json(); } catch (_) {}
+      // Airtable errors arrive as {error:{type,message}} (an object), which used to print as
+      // "[object Object]". The detail goes to the browser console for us; visitors get a plain message.
+      var detail = (err && err.error && typeof err.error === 'object')
+        ? ((err.error.type || '') + ': ' + (err.error.message || ''))
+        : (err.detail || err.error || '');
+      console.error('Quote submission failed (HTTP ' + resp.status + '):', detail);
+      throw new Error('submission failed');
     }
 
     // Success
@@ -589,7 +596,8 @@ async function submitQuote() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
   } catch(e) {
-    showError('Something went wrong: ' + e.message + '. Please try again or call us directly.');
+    console.error('Quote submission error:', e);
+    showError('Something went wrong sending your request. Please try again or call us directly.');
     btn.disabled = false;
     btn.textContent = 'Submit Quote Request';
   }
